@@ -1,0 +1,121 @@
+<?xml version="1.0" ?>
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <services>
+
+        <service id="sculpin.matcher" class="dflydev\util\antPathMatcher\AntPathMatcher" />
+
+        <service id="sculpin.site_configuration_factory" class="Sculpin\Core\SiteConfiguration\SiteConfigurationFactory">
+            <argument>%kernel.root_dir%</argument>
+            <argument>%kernel.environment%</argument>
+        </service>
+
+        <service id="sculpin.site_configuration" class="Dflydev\DotAccessConfiguration\Configuration" public="true">
+            <factory service="sculpin.site_configuration_factory" method="create" />
+        </service>
+
+        <service id="sculpin.source_permalink_factory" class="Sculpin\Core\Permalink\SourcePermalinkFactory">
+            <argument>%sculpin.permalink%</argument>
+        </service>
+
+        <service id="sculpin.writer" class="Sculpin\Core\Output\FilesystemWriter" public="true">
+            <argument type="service" id="filesystem" />
+            <argument>%sculpin.output_dir%</argument>
+        </service>
+
+        <service id="sculpin.data_provider_manager" class="Sculpin\Core\DataProvider\DataProviderManager" />
+
+        <service id="sculpin.generator_manager" class="Sculpin\Core\Generator\GeneratorManager">
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sculpin.site_configuration" />
+            <call method="setDataProviderManager">
+                <argument type="service" id="sculpin.data_provider_manager" />
+            </call>
+        </service>
+
+        <service id="sculpin.formatter_manager" class="Sculpin\Core\Formatter\FormatterManager">
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sculpin.site_configuration" />
+            <call method="setDataProviderManager">
+                <argument type="service" id="sculpin.data_provider_manager" />
+            </call>
+        </service>
+
+        <service id="sculpin.converter_manager" class="Sculpin\Core\Converter\ConverterManager">
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sculpin.formatter_manager" />
+        </service>
+
+        <service id="sculpin" class="Sculpin\Core\Sculpin" public="true">
+            <argument type="service" id="sculpin.site_configuration" />
+            <argument type="service" id="event_dispatcher" />
+            <argument type="service" id="sculpin.source_permalink_factory" />
+            <argument type="service" id="sculpin.writer" />
+            <argument type="service" id="sculpin.generator_manager" />
+            <argument type="service" id="sculpin.formatter_manager" />
+            <argument type="service" id="sculpin.converter_manager" />
+        </service>
+
+        <service id="sculpin.canal.custom_detector" class="Dflydev\Canal\Detector\ApacheMimeTypesExtensionDetector">
+            <argument type="service" id="sculpin.custom_mime_types_repository" />
+        </service>
+
+        <service id="sculpin.canal.default_detector" class="Dflydev\Canal\Detector\ApacheMimeTypesExtensionDetector" />
+
+        <service id="sculpin.canal.detector" class="Dflydev\Canal\Detector\CompositeDetector">
+            <argument type="collection">
+                <argument type="service" id="sculpin.canal.custom_detector" />
+                <argument type="service" id="sculpin.canal.default_detector" />
+            </argument>
+        </service>
+
+        <service id="sculpin.canal.analyzer" class="Dflydev\Canal\Analyzer\Analyzer">
+            <argument type="service" id="sculpin.canal.detector" />
+        </service>
+
+        <service id="sculpin.default_filesystem_data_source" class="Sculpin\Core\Source\FilesystemDataSource">
+            <argument>%sculpin.source_dir%</argument>
+            <argument>%sculpin.exclude%</argument>
+            <argument>%sculpin.ignore%</argument>
+            <argument>%sculpin.raw%</argument>
+            <argument type="service" id="sculpin.matcher" />
+            <argument type="service" id="sculpin.canal.analyzer" />
+            <tag name="sculpin.data_source" />
+        </service>
+
+        <service id="sculpin.default_config_filesystem_data_source" class="Sculpin\Core\Source\ConfigFilesystemDataSource">
+            <argument>%kernel.root_dir%/config</argument>
+            <argument type="service" id="sculpin.site_configuration" />
+            <argument type="service" id="sculpin.site_configuration_factory" />
+            <argument type="service" id="sculpin.matcher" />
+            <tag name="sculpin.data_source" />
+        </service>
+
+        <service id="sculpin.data_source" class="Sculpin\Core\Source\CompositeDataSource" public="true"/>
+
+        <service id="sculpin.custom_mime_types_repository" class="Dflydev\ApacheMimeTypes\ArrayRepository" />
+
+        <service id="Sculpin\Bundle\SculpinBundle\Command\ContainerDebugCommand"
+                 class="Sculpin\Bundle\SculpinBundle\Command\ContainerDebugCommand">
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Sculpin\Bundle\SculpinBundle\Command\GenerateCommand"
+                 class="Sculpin\Bundle\SculpinBundle\Command\GenerateCommand">
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Sculpin\Bundle\SculpinBundle\Command\InitCommand"
+                 class="Sculpin\Bundle\SculpinBundle\Command\InitCommand">
+            <tag name="console.command"/>
+        </service>
+
+        <service id="Sculpin\Bundle\SculpinBundle\Command\ServeCommand"
+                 class="Sculpin\Bundle\SculpinBundle\Command\ServeCommand">
+            <tag name="console.command"/>
+        </service>
+
+    </services>
+</container>

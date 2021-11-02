@@ -1,0 +1,4 @@
+## my datetime handling libaries
+arrow==1.2.1
+## networking libraries
+htmldate

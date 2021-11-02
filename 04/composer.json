@@ -1,0 +1,10 @@
+{
+    "name": "sculpin/sculpin",
+    "description": "Static Site Generator",
+    "homepage": "https://sculpin.io",
+    "keywords": ["static", "site", "generator"],
+    "license": "MIT",
+    "require": {
+        "php": "^8.0 || ^7.3"
+    }
+}

@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<ruleset name="Sculpin">
+ <description>PSR-2 based coding standard.</description>
+ <arg name="encoding" value="utf-8"/>
+ <arg name="colors"/>
+ <arg value="p"/>
+
+ <file>./src/</file>
+
+ <exclude-pattern>*/__BlankSculpinProject__/*</exclude-pattern>
+ <exclude-pattern>*/__EventListenerFixture__/*</exclude-pattern>
+
+ <rule ref="PSR2"/>
+ <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
+</ruleset>
