@@ -1,9 +1,8 @@
 version: 2
 updates:
-  - package-ecosystem: "composer"
+  - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "develop"
-    labels:
-      - "project dependencies"
+    allow:
+      - dependency-type: "all"
